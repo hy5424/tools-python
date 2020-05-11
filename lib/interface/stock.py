@@ -1,6 +1,6 @@
-import flask
+from flask import Flask
 
-server = flask.Flask(__name__)
+server = Flask(__name__)
 
 
 @server.route('/index')
