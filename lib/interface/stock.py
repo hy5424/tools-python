@@ -1,6 +1,6 @@
 from flask import Flask
 
-server = Flask(__name__, static_folder='/ptools')
+server = Flask(__name__)
 
 
 @server.route('/test')
