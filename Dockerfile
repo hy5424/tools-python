@@ -4,6 +4,6 @@ MAINTAINER Lcy <1031353743@qq.com>
 
 VOLUME /tmp
 
-CMD ["python", "start.py"]
+CMD ["python", "/lcy/jenkins/workspace/tools-python/start.py"]
 
 EXPOSE 8093
