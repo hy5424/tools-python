@@ -4,6 +4,8 @@ MAINTAINER Lcy <1031353743@qq.com>
 
 VOLUME /tmp
 
+COPY requirements.txt /
+
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 CMD ["python3", "/lcy/work/tools-python/tools-python/start.py"]
