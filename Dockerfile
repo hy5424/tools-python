@@ -2,9 +2,13 @@ FROM python:3.8
 
 MAINTAINER Lcy <1031353743@qq.com>
 
-VOLUME /tmp
+WORKDIR /usr/src/app
 
-CMD ["pip3", "install", "-r", "/lcy/work/tools-python/tools-python/requirements.py"]
+COPY requirements.txt ./
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY . .
 
 CMD ["python3", "/lcy/work/tools-python/tools-python/start.py"]
 
