@@ -4,7 +4,7 @@ MAINTAINER Lcy <1031353743@qq.com>
 
 WORKDIR /usr/src/app
 
-COPY /lcy/jenkins/workspace/tools-python/requirements.txt /
+COPY ./requirements.txt ./
 
 RUN pip3 install --no-cache-dir -r requirements.txt
 
