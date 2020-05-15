@@ -4,9 +4,7 @@ MAINTAINER Lcy <1031353743@qq.com>
 
 WORKDIR /usr/src/app
 
-COPY ./requirements.txt ./
-
-COPY ./start.py ./
+COPY . .
 
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt
 
