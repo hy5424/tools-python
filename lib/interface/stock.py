@@ -2,7 +2,7 @@
 from flask import Flask
 import easyquotation
 import json
-from config.setting import *
+from config.setting import config as conf
 from util.DBUtil import DBUtil
 
 server = Flask(__name__)
@@ -10,7 +10,7 @@ server = Flask(__name__)
 
 @server.route('/ptools/getStockList')
 def stockList():
-    quotation = easyquotation.use(STOCK_SOURCE)  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
+    quotation = easyquotation.use(conf.STOCK_SOURCE)  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
     stockades = quotation.market_snapshot(prefix=True)  # prefix 参数指定返回的行情字典中的股票代码 key 是否带 sz/sh 前缀
     # dict_json = json.loads(json.dumps(stockades))
     # db = DBUtil(DB_CONFIG)

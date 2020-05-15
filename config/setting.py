@@ -3,6 +3,13 @@ import os
 import sys
 
 
+class Config(object):
+    DEBUG = False
+
+    def __getitem__(self, item):
+        return self.__getattribute__(item)
+
+
 class DevelopmentConfig:
     SERVER_PORT = 8093
     STOCK_SOURCE = "sina"  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
@@ -28,4 +35,3 @@ if num < 1 or num > 1:
 env = sys.argv[1]
 APP_ENV = os.environ.get('APP_ENV', env).lower()
 config = mapping[APP_ENV]()
-
