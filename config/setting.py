@@ -11,13 +11,11 @@ class Config(object):
 
 
 class DevelopmentConfig:
-    SERVER_PORT = 8093
     STOCK_SOURCE = "sina"  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
     DB_CONFIG = "mysql+pymysql://root:123456@172.18.0.100:3306/TOOLS?charset=utf8mb4"
 
 
 class ProductionConfig:
-    SERVER_PORT = 8093
     STOCK_SOURCE = "sina"  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
     DB_CONFIG = "mysql+pymysql://root:root@172.17.176.183:3306/TOOLS?charset=utf8mb4"
 
