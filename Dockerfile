@@ -10,6 +10,6 @@ COPY ./start.py ./
 
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt
 
-CMD ["python3", "/lcy/work/tools-python/tools-python/start.py"]
+CMD ["python3", "start.py", "prod"]
 
 EXPOSE 8093
