@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from config.setting import SERVER_PORT
 from lib.interface.stock import server
 
