@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from flask import Flask
 import easyquotation
-import json
+from flask import Flask, request
+
 from config.setting import config as conf
-from util.DBUtil import DBUtil
 
 server = Flask(__name__)
 
@@ -21,3 +20,11 @@ def stockList():
     #     str += "insert into stock(code, name) value (" + codeStr + ", " + nameStr + ");"
     # db.execute_many_sql(str[:-1])
     return stockades
+
+
+@server.route('/ptools/getStockByCode', methods=['POST'])
+def getStockByCode():
+    quotation = easyquotation.use(conf.STOCK_SOURCE)
+    stockCode = request.json['stockCode']
+    stockData = quotation.real(stockCode)
+    return stockData
