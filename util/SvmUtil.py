@@ -95,7 +95,7 @@ class SvmUtil(object):
             self.svm_learning(stockCode)
         today = datetime.date.today()
         first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=60)
+        last_month = first - datetime.timedelta(days=15)
         start_time = last_month.strftime("%Y%m%d")
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
         model = joblib.load(stockCode[:-3] + "_model.m")
