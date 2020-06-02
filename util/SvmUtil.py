@@ -6,7 +6,7 @@ import time
 import numpy as np
 import tushare as ts
 from sklearn import svm
-from sklearn.externals import joblib
+import joblib
 
 
 class SvmUtil(object):
