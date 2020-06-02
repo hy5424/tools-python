@@ -3,3 +3,7 @@ requests==2.23.0
 pymysql
 sqlalchemy
 easyquotation
+tushare==1.2.59
+pytest
+pandas
+joblib

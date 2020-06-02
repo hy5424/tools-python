@@ -3,6 +3,7 @@ import easyquotation
 from flask import Flask, request
 
 from config.setting import config as conf
+from util.SvmUtil import SvmUtil
 
 server = Flask(__name__)
 
@@ -28,3 +29,19 @@ def getStockByCode():
     stockCode = request.json['stockCode']
     stockData = quotation.real(stockCode)
     return stockData
+
+
+@server.route('/ptools/getStockSvmLearning', methods=['POST'])
+def getStockSvmLearning():
+    stockCode = request.json['stockCode']
+    svm = SvmUtil()
+    svm.svm_learning(stockCode)
+    return 'success'
+
+
+@server.route('/ptools/getStockSvmResult', methods=['POST'])
+def getStockSvm():
+    stockCode = request.json['stockCode']
+    svm = SvmUtil()
+    prediction = svm.svm_predict(stockCode)
+    return str(prediction)
