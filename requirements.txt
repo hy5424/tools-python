@@ -7,3 +7,5 @@ tushare==1.2.59
 pytest
 pandas
 joblib
+sklearn
+svm
