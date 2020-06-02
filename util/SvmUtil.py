@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
-import time
 import os
+import time
+
 import numpy as np
 import tushare as ts
 from sklearn import svm
@@ -90,7 +91,7 @@ class SvmUtil(object):
         joblib.dump(model, stockCode[:-3] + "_model.m")
 
     def svm_predict(self, stockCode):
-        if not(os.path.exists(stockCode[:-3] + "_model.m")):
+        if not (os.path.exists(stockCode[:-3] + "_model.m")):
             self.svm_learning(stockCode)
         today = datetime.date.today()
         first = today.replace(day=1)
