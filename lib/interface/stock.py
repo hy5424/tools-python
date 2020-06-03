@@ -45,3 +45,10 @@ def getStockSvm():
     svm = SvmUtil()
     prediction = svm.svm_predict(stockCode)
     return str(prediction)
+
+
+@server.route('/ptools/deleteStockModel', methods=['POST'])
+def deleteModel():
+    svm = SvmUtil()
+    svm.svm_delete()
+    return 'success'

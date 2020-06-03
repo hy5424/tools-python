@@ -129,6 +129,13 @@ class SvmUtil(object):
         prediction = model.predict(features)[0]
         return prediction
 
+    @classmethod
+    def svm_delete(cls):
+        fileList = os.listdir()
+        for fileName in fileList:
+            if os.path.splitext(fileName)[1] == '.m':
+                os.remove(fileName)
+
 
 if __name__ == '__main__':
     code = '002277.SZ'
