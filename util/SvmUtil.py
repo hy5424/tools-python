@@ -3,10 +3,10 @@ import datetime
 import os
 import time
 
+import joblib
 import numpy as np
 import tushare as ts
 from sklearn import svm
-import joblib
 
 
 class SvmUtil(object):
@@ -39,7 +39,9 @@ class SvmUtil(object):
             days.append(str(days_value[i]))
 
         x_all = []
-        y_all = []
+        day_all = []
+        week_all = []
+        month_all = []
         for index in range(15, (len(days) - 5)):
             # 计算三星期共15个交易日相关数据
             start_day = days[index - 15]
@@ -73,32 +75,59 @@ class SvmUtil(object):
                         vol, return_now, std]
             x_all.append(features)
 
-        # 准备算法需要用到的数据
+        for i in range(len(days_close) - 20):
+            if days_close[i + 20] > days_close[i + 19]:
+                label = 1
+            else:
+                label = 0
+            day_all.append(label)
+
         for i in range(len(days_close) - 20):
             if days_close[i + 20] > days_close[i + 15]:
                 label = 1
             else:
                 label = 0
-            y_all.append(label)
+            week_all.append(label)
+
+        for i in range(len(days_close) - 20):
+            if days_close[i + 20] > days_close[i]:
+                label = 1
+            else:
+                label = 0
+            month_all.append(label)
 
         x_train = x_all[: -1]
-        y_train = y_all[: -1]
-        # 训练SVM
-        model = svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False,
-                        tol=0.001, cache_size=400, verbose=False, max_iter=-1,
-                        decision_function_shape='ovr', random_state=None)
-        model.fit(x_train, y_train)
-        joblib.dump(model, stockCode[:-3] + "_model.m")
+        day_train = day_all[: -1]
+        week_train = week_all[: -1]
+        month_train = month_all[: -1]
+
+        day_model = svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False,
+                            tol=0.001, cache_size=400, verbose=False, max_iter=-1,
+                            decision_function_shape='ovr', random_state=None)
+        day_model.fit(x_train, day_train)
+
+        week_model = svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False,
+                             tol=0.001, cache_size=400, verbose=False, max_iter=-1,
+                             decision_function_shape='ovr', random_state=None)
+        week_model.fit(x_train, week_train)
+
+        month_model = svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False,
+                              tol=0.001, cache_size=400, verbose=False, max_iter=-1,
+                              decision_function_shape='ovr', random_state=None)
+        month_model.fit(x_train, month_train)
+
+        joblib.dump(day_model, stockCode[:-3] + "_day_model.m")
+        joblib.dump(week_model, stockCode[:-3] + "_week_model.m")
+        joblib.dump(month_model, stockCode[:-3] + "_month_model.m")
 
     def svm_predict(self, stockCode):
-        if not (os.path.exists(stockCode[:-3] + "_model.m")):
+        if not (os.path.exists(stockCode[:-3] + "_day_model.m")):
             self.svm_learning(stockCode)
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=15)
         start_time = last_month.strftime("%Y%m%d")
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
-        model = joblib.load(stockCode[:-3] + "_model.m")
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
         open = df['open'].values[::-1]
         close = df['close'].values[::-1]
@@ -126,7 +155,16 @@ class SvmUtil(object):
         features = [open_mean, close_mean, diff_close_open_mean, volume_mean, max_mean, min_mean, diff_max_min_mean,
                     vol, return_now, std]
         features = np.array(features).reshape(1, -1)
-        prediction = model.predict(features)[0]
+        day_model = joblib.load(stockCode[:-3] + "_day_model.m")
+        week_model = joblib.load(stockCode[:-3] + "_week_model.m")
+        month_model = joblib.load(stockCode[:-3] + "_month_model.m")
+
+        day_prediction = day_model.predict(features)[0]
+        week_prediction = week_model.predict(features)[0]
+        month_prediction = month_model.predict(features)[0]
+
+        prediction = [day_prediction, week_prediction, month_prediction]
+
         return prediction
 
     @classmethod
@@ -138,6 +176,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '002277.SZ'
+    code = '600857.SH'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
