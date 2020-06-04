@@ -31,6 +31,9 @@ class SvmUtil(object):
         # 获取数据
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
 
+        if df.empty:
+            return None
+
         days_value = df['trade_date'].values[::-1]
         days_close = df['close'].values[::-1]
         days = []
@@ -129,6 +132,10 @@ class SvmUtil(object):
         start_time = last_month.strftime("%Y%m%d")
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
+
+        if df.empty:
+            return None
+
         open = df['open'].values[::-1]
         close = df['close'].values[::-1]
         train_max_x = df['high'].values[::-1]
@@ -176,6 +183,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '600857.SH'
+    code = '200596.SZ'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
