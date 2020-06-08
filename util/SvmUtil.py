@@ -34,6 +34,9 @@ class SvmUtil(object):
         if df.empty:
             return None
 
+        if len(df) < 200:
+            return None
+
         days_value = df['trade_date'].values[::-1]
         days_close = df['close'].values[::-1]
         days = []
@@ -45,9 +48,8 @@ class SvmUtil(object):
         day_all = []
         week_all = []
         month_all = []
-        for index in range(15, (len(days) - 5)):
-            # 计算三星期共15个交易日相关数据
-            start_day = days[index - 15]
+        for index in range(200, len(days)):
+            start_day = days[index - 200]
             end_day = days[index]
             data = self.pro.daily(ts_code=stockCode, start_date=start_day, end_date=end_day)
             open = data['open'].values[::-1]
@@ -78,21 +80,21 @@ class SvmUtil(object):
                         vol, return_now, std]
             x_all.append(features)
 
-        for i in range(len(days_close) - 20):
-            if days_close[i + 20] > days_close[i + 19]:
+        for i in range(len(days_close) - 200):
+            if days_close[i + 1] > days_close[i]:
                 label = 1
             else:
                 label = 0
             day_all.append(label)
 
-        for i in range(len(days_close) - 20):
-            if days_close[i + 20] > days_close[i + 15]:
+        for i in range(len(days_close) - 200):
+            if days_close[i + 5] > days_close[i]:
                 label = 1
             else:
                 label = 0
             week_all.append(label)
 
-        for i in range(len(days_close) - 20):
+        for i in range(len(days_close) - 200):
             if days_close[i + 20] > days_close[i]:
                 label = 1
             else:
@@ -125,10 +127,11 @@ class SvmUtil(object):
 
     def svm_predict(self, stockCode):
         if not (os.path.exists(stockCode[:-3] + "_day_model.m")):
-            self.svm_learning(stockCode)
+            if self.svm_learning(stockCode) is None:
+                return None
         today = datetime.date.today()
         first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=15)
+        last_month = first - datetime.timedelta(days=30)
         start_time = last_month.strftime("%Y%m%d")
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
@@ -183,6 +186,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '200596.SZ'
+    code = '603088.SH'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
