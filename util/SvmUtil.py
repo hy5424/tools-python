@@ -124,10 +124,12 @@ class SvmUtil(object):
         joblib.dump(day_model, stockCode[:-3] + "_day_model.m")
         joblib.dump(week_model, stockCode[:-3] + "_week_model.m")
         joblib.dump(month_model, stockCode[:-3] + "_month_model.m")
+        return 'success'
 
     def svm_predict(self, stockCode):
         if not (os.path.exists(stockCode[:-3] + "_day_model.m")):
-            if self.svm_learning(stockCode) is None:
+            learnResult = self.svm_learning(stockCode)
+            if learnResult is None:
                 return None
         today = datetime.date.today()
         first = today.replace(day=1)
