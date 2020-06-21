@@ -3,6 +3,7 @@ import easyquotation
 from flask import Flask, request
 
 from config.setting import config as conf
+from util.LotteryUtil import LotteryUtil
 from util.SvmUtil import SvmUtil
 
 server = Flask(__name__)
@@ -52,3 +53,9 @@ def deleteModel():
     svm = SvmUtil()
     svm.svm_delete()
     return 'success'
+
+
+@server.route('/ptools/getLottery', methods=['POST'])
+def getLottery():
+    lottery = LotteryUtil()
+    return lottery.random_ball()
