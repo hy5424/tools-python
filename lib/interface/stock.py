@@ -58,4 +58,5 @@ def deleteModel():
 @server.route('/ptools/getLottery', methods=['POST'])
 def getLottery():
     lottery = LotteryUtil()
-    return lottery.random_ball()
+    result = lottery.random_ball()
+    return str(result)
