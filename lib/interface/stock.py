@@ -3,6 +3,7 @@ import easyquotation
 from flask import Flask, request
 
 from config.setting import config as conf
+from util.AverageStockSelectionUtil import AverageStockSelectionUtil
 from util.LotteryUtil import LotteryUtil
 from util.SvmUtil import SvmUtil
 
@@ -46,6 +47,14 @@ def getStockSvm():
     svm = SvmUtil()
     prediction = svm.svm_predict(stockCode)
     return str(prediction)
+
+
+@server.route('/ptools/getStockMASvmResult', methods=['POST'])
+def getStockMASvm():
+    stockCode = request.json['stockCode']
+    avg_svm = AverageStockSelectionUtil()
+    avg_prediction = avg_svm.svm_predict(stockCode)
+    return str(avg_prediction)
 
 
 @server.route('/ptools/deleteStockModel', methods=['POST'])
