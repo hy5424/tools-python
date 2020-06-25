@@ -8,6 +8,8 @@ import numpy as np
 import tushare as ts
 from sklearn import svm
 
+from util.AverageStockSelectionUtil import AverageStockSelectionUtil
+
 
 class SvmUtil(object):
 
@@ -175,7 +177,11 @@ class SvmUtil(object):
         week_prediction = week_model.predict(features)[0]
         month_prediction = month_model.predict(features)[0]
 
-        prediction = [day_prediction, week_prediction, month_prediction]
+        avg_svm = AverageStockSelectionUtil()
+        avg_prediction = avg_svm.svm_predict(stockCode)
+
+        prediction = [day_prediction, week_prediction, month_prediction, avg_prediction[0], avg_prediction[1],
+                      avg_prediction[2]]
 
         return prediction
 
@@ -188,6 +194,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '603088.SH'
+    code = '000902.SZ'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
