@@ -27,7 +27,7 @@ class SvmUtil(object):
 
     def svm_learning(self, stockCode):
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
-        start_year = int(time.strftime('%Y', time.localtime(time.time()))) - 2
+        start_year = int(time.strftime('%Y', time.localtime(time.time()))) - 3
         month_day = time.strftime('%m%d', time.localtime(time.time()))
         start_time = '{}{}'.format(start_year, month_day)
         # 获取数据
@@ -36,11 +36,15 @@ class SvmUtil(object):
         if df.empty:
             return None
 
-        if len(df) < 200:
+        if len(df) < 500:
             return None
 
         days_value = df['trade_date'].values[::-1]
         days_close = df['close'].values[::-1]
+        open = df['open'].values[::-1]
+        max_x = df['high'].values[::-1]
+        min_n = df['low'].values[::-1]
+        amount = df['amount'].values[::-1]
         days = []
         # 获取行情日期列表
         for i in range(len(days_value)):
@@ -50,30 +54,22 @@ class SvmUtil(object):
         day_all = []
         week_all = []
         month_all = []
-        for index in range(200, len(days)):
-            start_day = days[index - 200]
-            end_day = days[index]
-            data = self.pro.daily(ts_code=stockCode, start_date=start_day, end_date=end_day)
-            open = data['open'].values[::-1]
-            close = data['close'].values[::-1]
-            max_x = data['high'].values[::-1]
-            min_n = data['low'].values[::-1]
-            amount = data['amount'].values[::-1]
+        for index in range(len(days) - 30):
             volume = []
-            for i in range(len(close)):
-                volume_temp = amount[i] / close[i]
+            for i in range(len(days_close) - 30):
+                volume_temp = amount[-i - 1] / days_close[-i]
                 volume.append(volume_temp)
 
-            open_mean = open[-1] / np.mean(open)  # 开盘价/均值
-            close_mean = close[-1] / np.mean(close)  # 收盘价/均值
+            open_mean = open[-index - 1] / np.mean(open)  # 开盘价/均值
+            close_mean = days_close[-index - 1] / np.mean(days_close)  # 收盘价/均值
             diff_close_open_mean = close_mean - open_mean  # 收盘价均值-开盘价均值
-            volume_mean = volume[-1] / np.mean(volume)  # 现量/均量
-            max_mean = max_x[-1] / np.mean(max_x)  # 最高价/均价
-            min_mean = min_n[-1] / np.mean(min_n)  # 最低价/均价
+            volume_mean = volume[-index - 1] / np.mean(volume)  # 现量/均量
+            max_mean = max_x[-index - 1] / np.mean(max_x)  # 最高价/均价
+            min_mean = min_n[-index - 1] / np.mean(min_n)  # 最低价/均价
             diff_max_min_mean = max_mean - min_mean  # 最高价均值-最低价均值
-            vol = volume[-1]  # min_mean
-            return_now = close[-1] / close[0]  # 区间收益率
-            std = np.std(np.array(close), axis=0)  # 区间标准差
+            vol = volume[-index - 1]  # min_mean
+            return_now = days_close[-index - 1] / days_close[-index]  # 区间收益率
+            std = np.std(np.array(days_close), axis=0)  # 区间标准差
 
             # 将计算出的指标添加到训练集X
             # features用于存放因子
@@ -82,22 +78,22 @@ class SvmUtil(object):
                         vol, return_now, std]
             x_all.append(features)
 
-        for i in range(len(days_close) - 200):
-            if days_close[i + 1] > days_close[i]:
+        for i in range(len(days_close) - 30):
+            if days_close[-i - 1] > days_close[-i - 2]:
                 label = 1
             else:
                 label = 0
             day_all.append(label)
 
-        for i in range(len(days_close) - 200):
-            if days_close[i + 5] > days_close[i]:
+        for i in range(len(days_close) - 30):
+            if days_close[-i - 1] > days_close[-i - 6]:
                 label = 1
             else:
                 label = 0
             week_all.append(label)
 
-        for i in range(len(days_close) - 200):
-            if days_close[i + 20] > days_close[i]:
+        for i in range(len(days_close) - 30):
+            if days_close[-i - 1] > days_close[-i - 21]:
                 label = 1
             else:
                 label = 0
@@ -153,15 +149,15 @@ class SvmUtil(object):
             volume_temp = train_amount[i] / close[i]
             volume.append(volume_temp)
 
-        open_mean = open[-1] / np.mean(open)
-        close_mean = close[-1] / np.mean(close)
+        open_mean = open[-i - 1] / np.mean(open)
+        close_mean = close[-i - 1] / np.mean(close)
         diff_close_open_mean = close_mean - open_mean
-        volume_mean = volume[-1] / np.mean(volume)
-        max_mean = train_max_x[-1] / np.mean(train_max_x)
-        min_mean = train_min_n[-1] / np.mean(train_min_n)
+        volume_mean = volume[-i - 1] / np.mean(volume)
+        max_mean = train_max_x[-i - 1] / np.mean(train_max_x)
+        min_mean = train_min_n[-i - 1] / np.mean(train_min_n)
         diff_max_min_mean = max_mean - min_mean
-        vol = volume[-1]
-        return_now = close[-1] / close[0]
+        vol = volume[-i - 1]
+        return_now = close[-i - 1] / close[-i]
         std = np.std(np.array(close), axis=0)
 
         # 得到本次输入模型的因子
