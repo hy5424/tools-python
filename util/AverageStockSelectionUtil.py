@@ -15,7 +15,7 @@ class AverageStockSelectionUtil(object):
 
     def svm_learning(self, stockCode):
         today = datetime.date.today()
-        day60 = today - datetime.timedelta(days=300)
+        day60 = today - datetime.timedelta(days=1000)
         start_time = day60.strftime("%Y%m%d")
         end_time = time.strftime('%Y%m%d', time.localtime(time.time()))
 
@@ -23,6 +23,9 @@ class AverageStockSelectionUtil(object):
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
 
         if df.empty:
+            return None
+
+        if len(df) < 500:
             return None
 
         close_values = df['close'].values[::-1]
@@ -37,7 +40,7 @@ class AverageStockSelectionUtil(object):
         day10_close_mean = []
         day20_close_mean = []
 
-        for index in range(150):
+        for index in range(500):
             day5_close = []
             day10_close = []
             day20_close = []
