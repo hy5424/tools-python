@@ -56,8 +56,8 @@ class SvmUtil(object):
         month_all = []
         for index in range(len(days) - 30):
             volume = []
-            for i in range(len(days_close)):
-                volume_temp = amount[i] / days_close[i]
+            for i in range(len(days_close) - 30):
+                volume_temp = amount[-i - 1] / days_close[-i]
                 volume.append(volume_temp)
 
             open_mean = open[-index - 1] / np.mean(open)  # 开盘价/均值
