@@ -80,19 +80,28 @@ class AverageStockSelectionUtil(object):
             x_all.append(features)
 
             if close_y[-i - 1] > close_y[-i - 2]:
-                label = 1
+                if (close_y[-i - 1] / close_y[-i - 2]) - 1 >= 0.05:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             day_all.append(label)
 
             if close_y[-i - 1] > close_y[-i - 5]:
-                label = 1
+                if (close_y[-i - 1] / close_y[-i - 5]) - 1 >= 0.1:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             week_all.append(label)
 
             if close_y[-i - 1] > close_y[-i - 20]:
-                label = 1
+                if (close_y[-i - 1] / close_y[-i - 20]) - 1 >= 0.15:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             month_all.append(label)
