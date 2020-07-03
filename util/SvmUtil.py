@@ -80,21 +80,30 @@ class SvmUtil(object):
 
         for i in range(len(days_close) - 30):
             if days_close[-i - 1] > days_close[-i - 2]:
-                label = 1
+                if (days_close[-i - 1] / days_close[-i - 2]) - 1 >= 0.05:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             day_all.append(label)
 
         for i in range(len(days_close) - 30):
             if days_close[-i - 1] > days_close[-i - 6]:
-                label = 1
+                if (days_close[-i - 1] / days_close[-i - 6]) - 1 >= 0.1:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             week_all.append(label)
 
         for i in range(len(days_close) - 30):
             if days_close[-i - 1] > days_close[-i - 21]:
-                label = 1
+                if (days_close[-i - 1] / days_close[-i - 21]) - 1 >= 0.15:
+                    label = 2
+                else:
+                    label = 1
             else:
                 label = 0
             month_all.append(label)
@@ -190,6 +199,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '000902.SZ'
+    code = '002556.SZ'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
