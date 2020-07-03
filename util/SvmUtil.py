@@ -188,8 +188,6 @@ class SvmUtil(object):
         prediction = [day_prediction, week_prediction, month_prediction, avg_prediction[0], avg_prediction[1],
                       avg_prediction[2]]
 
-        print(prediction)
-
         return prediction
 
     @classmethod
