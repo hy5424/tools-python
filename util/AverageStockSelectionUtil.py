@@ -21,6 +21,7 @@ class AverageStockSelectionUtil(object):
 
         # 获取数据
         df = self.pro.daily(ts_code=stockCode, start_date=start_time, end_date=end_time)
+        df = self.cal_kdj_vector(df)
 
         if df.empty:
             return None
@@ -29,18 +30,27 @@ class AverageStockSelectionUtil(object):
             return None
 
         close_values = df['close'].values[::-1]
+        k_value = df['K'].values[::-1]
+        d_value = df['D'].values[::-1]
+        j_value = df['J'].values[::-1]
 
         close = []
         close_y = []
+        k = []
+        d = []
+        j = []
         for i in range(len(close_values)):
             close.append(close_values[i])
             close_y.append(close_values[i])
+            k.append(k_value[i])
+            d.append(d_value[i])
+            j.append(j_value[i])
 
         day5_close_mean = []
         day10_close_mean = []
         day20_close_mean = []
 
-        for index in range(500):
+        for index in range(550):
             day5_close = []
             day10_close = []
             day20_close = []
@@ -73,9 +83,16 @@ class AverageStockSelectionUtil(object):
             diff_day5_day10_close = day5_close_mean[i] - day10_close_mean[i]
             diff_day5_day20_close = day5_close_mean[i] - day20_close_mean[i]
             diff_day10_day20_close = day10_close_mean[i] - day20_close_mean[i]
+            kdj_k = k[-i - 1]
+            kdj_d = d[-i - 1]
+            kdj_j = j[-i - 1]
+            diff_k_d = kdj_k - kdj_d
+            diff_k_j = kdj_k - kdj_j
+            diff_d_j = kdj_d - kdj_j
             features = [day5_close_mean_value, day10_close_mean_value, day20_close_mean_value, diff_day5_close,
                         diff_day10_close, diff_day20_close, diff_day5_day10_close,
-                        diff_day5_day20_close, diff_day10_day20_close]
+                        diff_day5_day20_close, diff_day10_day20_close, kdj_k, kdj_d, kdj_j, diff_k_d, diff_k_j, diff_d_j
+                        ]
 
             x_all.append(features)
 
@@ -130,7 +147,7 @@ class AverageStockSelectionUtil(object):
         joblib.dump(week_model, stockCode[:-3] + "_MA_week_model.m")
         joblib.dump(month_model, stockCode[:-3] + "_MA_month_model.m")
 
-        all_mean = [day5_close_mean, day10_close_mean, day20_close_mean]
+        all_mean = [day5_close_mean, day10_close_mean, day20_close_mean, k, d, j]
         return all_mean
 
     def svm_predict(self, stockCode):
@@ -141,6 +158,9 @@ class AverageStockSelectionUtil(object):
         day5_close_mean = learnResult[0]
         day10_close_mean = learnResult[1]
         day20_close_mean = learnResult[2]
+        k = learnResult[3]
+        d = learnResult[4]
+        j = learnResult[5]
 
         features = []
         for i in range(1):
@@ -153,9 +173,16 @@ class AverageStockSelectionUtil(object):
             diff_day5_day10_close = day5_close_mean[i] - day10_close_mean[i]
             diff_day5_day20_close = day5_close_mean[i] - day20_close_mean[i]
             diff_day10_day20_close = day10_close_mean[i] - day20_close_mean[i]
+            kdj_k = k[-i - 1]
+            kdj_d = d[-i - 1]
+            kdj_j = j[-i - 1]
+            diff_k_d = kdj_k - kdj_d
+            diff_k_j = kdj_k - kdj_j
+            diff_d_j = kdj_d - kdj_j
             features = [day5_close_mean_value, day10_close_mean_value, day20_close_mean_value, diff_day5_close,
                         diff_day10_close, diff_day20_close, diff_day5_day10_close,
-                        diff_day5_day20_close, diff_day10_day20_close]
+                        diff_day5_day20_close, diff_day10_day20_close, kdj_k, kdj_d, kdj_j, diff_k_d, diff_k_j, diff_d_j
+                        ]
 
         features = np.array(features).reshape(1, -1)
         day_model = joblib.load(stockCode[:-3] + "_MA_day_model.m")
@@ -166,9 +193,22 @@ class AverageStockSelectionUtil(object):
         week_prediction = week_model.predict(features)[0]
         month_prediction = month_model.predict(features)[0]
         prediction = [day_prediction, week_prediction, month_prediction]
+
         return prediction
+
+    def cal_kdj_vector(self, df_data):
+        low_list = df_data['low'].rolling(window=5, min_periods=5).min()
+        low_list.fillna(value=df_data['low'].expanding().min(), inplace=True)
+        high_list = df_data['high'].rolling(window=5, min_periods=5).max()
+        high_list.fillna(value=df_data['high'].expanding().max(), inplace=True)
+        rsv = (df_data['close'] - low_list) / (high_list - low_list) * 100
+        df_data['K'] = rsv.ewm(com=2).mean()
+        df_data['D'] = df_data['K'].ewm(com=2).mean()
+        df_data['J'] = 3 * df_data['K'] - 2 * df_data['D']
+
+        return df_data
 
 
 if __name__ == '__main__':
-    code = '002565.SZ'
+    code = '002556.SZ'
     AverageStockSelectionUtil().svm_predict(code)
