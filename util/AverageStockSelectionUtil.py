@@ -6,6 +6,7 @@ import joblib
 import numpy as np
 import tushare as ts
 from sklearn import svm
+import pandas as pd
 
 
 class AverageStockSelectionUtil(object):
@@ -29,10 +30,10 @@ class AverageStockSelectionUtil(object):
         if len(df) < 500:
             return None
 
-        close_values = df['close'].values[::-1]
-        k_value = df['K'].values[::-1]
-        d_value = df['D'].values[::-1]
-        j_value = df['J'].values[::-1]
+        close_values = df['close'].values[:-1]
+        k_value = df['K'].values[:-1]
+        d_value = df['D'].values[:-1]
+        j_value = df['J'].values[:-1]
 
         close = []
         close_y = []
@@ -197,12 +198,17 @@ class AverageStockSelectionUtil(object):
         return prediction
 
     def cal_kdj_vector(self, df_data):
-        low_list = df_data['low'].rolling(window=5, min_periods=5).min()
+        df_data.sort_values('trade_date', inplace=True)
+
+        low_list = df_data['low'].rolling(5).min()
         low_list.fillna(value=df_data['low'].expanding().min(), inplace=True)
-        high_list = df_data['high'].rolling(window=5, min_periods=5).max()
+
+        high_list = df_data['high'].rolling(5).max()
         high_list.fillna(value=df_data['high'].expanding().max(), inplace=True)
+
         rsv = (df_data['close'] - low_list) / (high_list - low_list) * 100
-        df_data['K'] = rsv.ewm(com=2).mean()
+
+        df_data['K'] = pd.DataFrame(rsv).ewm(com=2).mean()
         df_data['D'] = df_data['K'].ewm(com=2).mean()
         df_data['J'] = 3 * df_data['K'] - 2 * df_data['D']
 
@@ -210,5 +216,5 @@ class AverageStockSelectionUtil(object):
 
 
 if __name__ == '__main__':
-    code = '002556.SZ'
+    code = '002565.SZ'
     AverageStockSelectionUtil().svm_predict(code)
