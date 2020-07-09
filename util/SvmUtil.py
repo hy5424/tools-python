@@ -158,15 +158,15 @@ class SvmUtil(object):
             volume_temp = train_amount[i] / close[i]
             volume.append(volume_temp)
 
-        open_mean = open[-i - 1] / np.mean(open)
-        close_mean = close[-i - 1] / np.mean(close)
+        open_mean = open[-1] / np.mean(open)
+        close_mean = close[-1] / np.mean(close)
         diff_close_open_mean = close_mean - open_mean
-        volume_mean = volume[-i - 1] / np.mean(volume)
-        max_mean = train_max_x[-i - 1] / np.mean(train_max_x)
-        min_mean = train_min_n[-i - 1] / np.mean(train_min_n)
+        volume_mean = volume[-1] / np.mean(volume)
+        max_mean = train_max_x[-1] / np.mean(train_max_x)
+        min_mean = train_min_n[-1] / np.mean(train_min_n)
         diff_max_min_mean = max_mean - min_mean
-        vol = volume[-i - 1]
-        return_now = close[-i - 1] / close[-i]
+        vol = volume[-1]
+        return_now = close[-1] / close[-2]
         std = np.std(np.array(close), axis=0)
 
         # 得到本次输入模型的因子
@@ -199,6 +199,6 @@ class SvmUtil(object):
 
 
 if __name__ == '__main__':
-    code = '002556.SZ'
+    code = '002697.SZ'
     # SvmUtil().svm_learning(code)
     SvmUtil().svm_predict(code)
