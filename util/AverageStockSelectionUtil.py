@@ -163,27 +163,25 @@ class AverageStockSelectionUtil(object):
         d = learnResult[4]
         j = learnResult[5]
 
-        features = []
-        for i in range(1):
-            day5_close_mean_value = day5_close_mean[i]
-            day10_close_mean_value = day10_close_mean[i]
-            day20_close_mean_value = day20_close_mean[i]
-            diff_day5_close = day5_close_mean[i] - day5_close_mean[i + 1]
-            diff_day10_close = day10_close_mean[i] - day10_close_mean[i + 1]
-            diff_day20_close = day20_close_mean[i] - day20_close_mean[i + 1]
-            diff_day5_day10_close = day5_close_mean[i] - day10_close_mean[i]
-            diff_day5_day20_close = day5_close_mean[i] - day20_close_mean[i]
-            diff_day10_day20_close = day10_close_mean[i] - day20_close_mean[i]
-            kdj_k = k[-i - 1]
-            kdj_d = d[-i - 1]
-            kdj_j = j[-i - 1]
-            diff_k_d = kdj_k - kdj_d
-            diff_k_j = kdj_k - kdj_j
-            diff_d_j = kdj_d - kdj_j
-            features = [day5_close_mean_value, day10_close_mean_value, day20_close_mean_value, diff_day5_close,
-                        diff_day10_close, diff_day20_close, diff_day5_day10_close,
-                        diff_day5_day20_close, diff_day10_day20_close, kdj_k, kdj_d, kdj_j, diff_k_d, diff_k_j, diff_d_j
-                        ]
+        day5_close_mean_value = day5_close_mean[0]
+        day10_close_mean_value = day10_close_mean[0]
+        day20_close_mean_value = day20_close_mean[0]
+        diff_day5_close = day5_close_mean[0] - day5_close_mean[1]
+        diff_day10_close = day10_close_mean[0] - day10_close_mean[1]
+        diff_day20_close = day20_close_mean[0] - day20_close_mean[1]
+        diff_day5_day10_close = day5_close_mean[0] - day10_close_mean[0]
+        diff_day5_day20_close = day5_close_mean[0] - day20_close_mean[0]
+        diff_day10_day20_close = day10_close_mean[0] - day20_close_mean[0]
+        kdj_k = k[-1]
+        kdj_d = d[-1]
+        kdj_j = j[-1]
+        diff_k_d = kdj_k - kdj_d
+        diff_k_j = kdj_k - kdj_j
+        diff_d_j = kdj_d - kdj_j
+        features = [day5_close_mean_value, day10_close_mean_value, day20_close_mean_value, diff_day5_close,
+                    diff_day10_close, diff_day20_close, diff_day5_day10_close,
+                    diff_day5_day20_close, diff_day10_day20_close, kdj_k, kdj_d, kdj_j, diff_k_d, diff_k_j, diff_d_j
+                    ]
 
         features = np.array(features).reshape(1, -1)
         day_model = joblib.load(stockCode[:-3] + "_MA_day_model.m")
