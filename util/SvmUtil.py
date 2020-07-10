@@ -108,10 +108,10 @@ class SvmUtil(object):
                 label = 0
             month_all.append(label)
 
-        x_train = x_all[: -1]
-        day_train = day_all[: -1]
-        week_train = week_all[: -1]
-        month_train = month_all[: -1]
+        x_train = x_all[::-1]
+        day_train = day_all[::-1]
+        week_train = week_all[::-1]
+        month_train = month_all[::-1]
 
         day_model = svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False,
                             tol=0.001, cache_size=400, verbose=False, max_iter=-1,
