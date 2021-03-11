@@ -73,7 +73,7 @@ def getLottery():
 
 
 @server.route('/ptools/getStockPrice', methods=['POST'])
-def getStockMASvm():
+def getStockPrice():
     stockCode = request.json['stockCode']
     days = request.json['days']
     get_price = GetStockPrice()
