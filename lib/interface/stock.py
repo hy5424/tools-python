@@ -4,6 +4,7 @@ from flask import Flask, request
 
 from config.setting import config as conf
 from util.AverageStockSelectionUtil import AverageStockSelectionUtil
+from util.GetStockPrice import GetStockPrice
 from util.LotteryUtil import LotteryUtil
 from util.SvmUtil import SvmUtil
 
@@ -69,3 +70,12 @@ def getLottery():
     lottery = LotteryUtil()
     result = lottery.random_ball()
     return str(result)
+
+
+@server.route('/ptools/getStockPrice', methods=['POST'])
+def getStockMASvm():
+    stockCode = request.json['stockCode']
+    days = request.json['days']
+    get_price = GetStockPrice()
+    data = get_price.get_price(stockCode, days)
+    return data
