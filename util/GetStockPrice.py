@@ -25,9 +25,9 @@ class GetStockPrice(object):
                          'close': [today_data.close, pre_data.close],
                          'pre_close': [today_data.pre_close, pre_data.pre_close]}
         response_data_format = pd.DataFrame(response_data)
-        print(response_data_format)
+        return response_data_format
 
 
 if __name__ == '__main__':
-    code = '002565.SZ'
+    code = '000582.SZ'
     GetStockPrice().get_price(code, 4)
