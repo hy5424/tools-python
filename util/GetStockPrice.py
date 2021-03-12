@@ -18,7 +18,8 @@ class GetStockPrice(object):
         df = self.pro.daily(ts_code=stock_code, start_date=start_time, end_date=end_time)
         today_data = df.loc[0]
         pre_data = df.loc[days]
-        response_data = {'ts_code': [today_data.trade_date, pre_data.trade_date],
+        response_data = {'ts_code': [today_data.ts_code, pre_data.ts_code],
+                         'trade_date': [today_data.trade_date, pre_data.trade_date],
                          'open': [today_data.open, pre_data.open],
                          'high': [today_data.high, pre_data.high],
                          'low': [today_data.low, pre_data.low],
