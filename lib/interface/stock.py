@@ -78,4 +78,4 @@ def getStockPrice():
     days = request.json['days']
     get_price = GetStockPrice()
     data = get_price.get_price(stockCode, days)
-    return str(data)
+    return data
