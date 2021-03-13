@@ -26,7 +26,7 @@ class GetStockPrice(object):
                          'close': [today_data.close, pre_data.close],
                          'pre_close': [today_data.pre_close, pre_data.pre_close]}
         response_data_format = pd.DataFrame(response_data)
-        return response_data_format.to_json(orient='records', force_ascii=False)
+        return response_data_format
 
 
 if __name__ == '__main__':
